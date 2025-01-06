@@ -154,7 +154,6 @@ public class UserController {
     }
 
     // 이메일 인증 코드 요청
-    @CrossOrigin(origins = "https://www.ncbt.site")
     @GetMapping("/form/email-code")
     public ResponseEntity<?> checkEmail(@RequestParam("email") @Valid String email) {
         boolean isExisted = userMapper.isEmailExisted(email);
