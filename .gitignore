@@ -241,4 +241,5 @@ $RECYCLE.BIN/
 *.lnk
 
 application.yml
+build/resources/main/application.yml
 # End of https://www.toptal.com/developers/gitignore/api/macos,windows,node,dotenv
