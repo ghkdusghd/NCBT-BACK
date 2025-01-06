@@ -1,7 +1,8 @@
 spring:
   mail:
     host: smtp.gmail.com
-    port: 587
+    port: 465
+    secure: true
     username: betnwjd25@gmail.com
     password: lyuayrrbamveiezo
     properties:
@@ -54,3 +55,11 @@ jwt:
   secret: 6b9e99461f38d94afabeec2b65fc44a8baa27b6e11c8409e2b0f0cb2b7d5c3d1
   access-expiration: 3600000 #1시간
   refresh-expiration: 604800000 #1주일
+
+#server:
+#  port: 443
+#  ssl:
+#    key-store: classpath:ssl/keystore.p12
+#    key-store-password: 'Hongkim9592!'
+#    key-store-type: PKCS12
+#    key-alias: tomcat

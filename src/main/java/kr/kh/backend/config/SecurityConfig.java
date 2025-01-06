@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -39,10 +40,11 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, HttpSession httpSession) throws Exception {
-        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        http.httpBasic(basic -> basic.disable())
+                .logout(logout -> logout.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
                 .authorizeHttpRequests(
                         authorize -> authorize
                                 .requestMatchers("/error").permitAll()
@@ -50,6 +52,7 @@ public class SecurityConfig {
                                 .requestMatchers("/login/**").permitAll() // 소셜로그인, 회원가입 요청 허용
                                 .requestMatchers("/ranking/**").permitAll() // 메인 페이지 요청 허용
                                 .requestMatchers("/sponsor/**").permitAll() // 후원 관련
+                                .requestMatchers(HttpMethod.OPTIONS).permitAll() // OPTIONS 요청 허용
                                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN") // ADMIN 권한이 있어야 요청할 수 있는 경로
                                 .anyRequest().authenticated() // 그 밖의 요청은 인증 필요
                 )
@@ -89,13 +92,29 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
+
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:3000");
-        config.addAllowedMethod("*");
-        config.addAllowedHeader("*");
+        config.addAllowedOrigin("https://www.ncbt.site");
+        config.addAllowedOrigin("https://api.ncbt.site");
+
+        config.addAllowedMethod("OPTIONS");
+        config.addAllowedMethod("GET");
+        config.addAllowedMethod("POST");
+        config.addAllowedMethod("PUT");
+        config.addAllowedMethod("DELETE");
+
+        config.addAllowedHeader("Authorization");
+        config.addAllowedHeader("Content-Type");
+        config.addAllowedHeader("X-Requested-With");
+        config.addAllowedHeader("accept");
+        config.addAllowedHeader("Origin");
+        config.addAllowedHeader("Access-Control-Request-Method");
+        config.addAllowedHeader("Access-Control-Request-Headers");
+
         config.addExposedHeader("Authorization");
         config.addExposedHeader("Set-Cookie");
 
+        config.setMaxAge(3600L);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
