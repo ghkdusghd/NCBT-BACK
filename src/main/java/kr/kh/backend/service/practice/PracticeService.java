@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 import static org.springframework.web.servlet.function.ServerResponse.status;
 
 
@@ -119,6 +121,15 @@ public class PracticeService {
                 return ResponseEntity.status(500).body("문제 오류 신고 중 문제가 발생했습니다: " + e.getMessage());
             }
         }
+
+        // 북마크 모아보기
+        public List<BookmarkDTO> getAllBookmarks(String username) {
+            int userId = userMapper.findId(username);
+            log.info("북마크 요청 유저 아이디 = {}", userId);
+
+            return practiceMapper.findBookmarkByUserId(userId);
+        }
+
     }
 
 
