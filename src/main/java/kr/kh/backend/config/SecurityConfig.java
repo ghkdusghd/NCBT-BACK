@@ -40,9 +40,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, HttpSession httpSession) throws Exception {
-        http.httpBasic(basic -> basic.disable())
-                .logout(logout -> logout.disable())
-//                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
@@ -89,36 +88,25 @@ public class SecurityConfig {
     }
 
     // security에 cors 합침
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration config = new CorsConfiguration();
-//
-//        config.setAllowCredentials(true);
-//        config.addAllowedOrigin("https://www.ncbt.site");
-//        config.addAllowedOrigin("https://api.ncbt.site");
-//
-//        config.addAllowedMethod("OPTIONS");
-//        config.addAllowedMethod("GET");
-//        config.addAllowedMethod("POST");
-//        config.addAllowedMethod("PUT");
-//        config.addAllowedMethod("DELETE");
-//
-//        config.addAllowedHeader("Authorization");
-//        config.addAllowedHeader("Content-Type");
-//        config.addAllowedHeader("X-Requested-With");
-//        config.addAllowedHeader("accept");
-//        config.addAllowedHeader("Origin");
-//        config.addAllowedHeader("Access-Control-Request-Method");
-//        config.addAllowedHeader("Access-Control-Request-Headers");
-//
-//        config.addExposedHeader("Authorization");
-//        config.addExposedHeader("Set-Cookie");
-//
-//        config.setMaxAge(3600L);
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", config);
-//        return source;
-//    }
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("http://localhost:3000/");
+
+        config.addAllowedMethod("*");
+
+        config.addAllowedHeader("*");
+
+        config.addExposedHeader("Authorization");
+        config.addExposedHeader("Set-Cookie");
+
+        config.setMaxAge(3600L);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
 
 
     @Bean
