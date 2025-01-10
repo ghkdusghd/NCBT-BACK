@@ -27,9 +27,13 @@ public class JwtAuthFilter extends GenericFilterBean {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         log.info("do JWT Filter ! request = {}", request);
 
+
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         String path = ((HttpServletRequest) request).getRequestURI();
+
+        // 아래 추가
+        System.out.println("Requested Path: " + path);
 
         // 모든 로그인 요청에 대해 예외 처리 (필터를 통과시킴)
         if (path.startsWith("/form/") || path.startsWith("/login/") || path.startsWith("/ranking/")) {

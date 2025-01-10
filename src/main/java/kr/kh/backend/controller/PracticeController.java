@@ -25,6 +25,7 @@ public class PracticeController {
 
     }
 
+    // 북마크 페이지 요청
     @GetMapping("/bookmarks")
     public ResponseEntity<Long> getBookmark(@RequestParam("questionId") Long questionId,
                                             @RequestHeader("Authorization") String authorizationHeader) {
