@@ -26,10 +26,15 @@ public interface PracticeMapper {
             "VALUES (#{subjectId}, #{title}, #{content}, #{userId}, #{subjectQuestionId})")
     int addComplaint(PracticeComplaintsDTO practiceComplaintsDTO);
 
-
     // 중복 신고 여부 확인
     @Select("SELECT * FROM question_complaints WHERE user_id = #{userId} AND subject_question_id = #{subjectQuestionId}")
     PracticeComplaintsDTO findComplaintByUserIdAndSubjectQuestionId(Long userId, Long subjectQuestionId);
+
+    // 과목명으로 과목id 조회
+    @Select("SELECT id FROM subject WHERE title = #{title}")
+    Integer findIdByTitle(@Param("title") String title);
+
+    //
 
     // 북마크 가져오기
     @Select("SELECT * FROM bookmarks WHERE user_id = #{userId} ORDER BY subject_id")
