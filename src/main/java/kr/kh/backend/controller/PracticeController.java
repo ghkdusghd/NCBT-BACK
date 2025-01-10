@@ -41,7 +41,9 @@ public class PracticeController {
 
     }
 
-    // 북마크 페이지 요청
+    // 북마크한 문제 조회
+    @Operation(summary = "연습문제 페이지 북마크",
+            description = "연습문제 페이지에서 불러온 랜덤 문제들 중 사용자가 북마크한 문제가 있는지 조회합니다.")
     @GetMapping("/bookmarks")
     public ResponseEntity<Long> getBookmark(@RequestParam("questionId") Long questionId,
                                             @RequestHeader("Authorization") String authorizationHeader) {
@@ -51,7 +53,7 @@ public class PracticeController {
     }
 
     // 문제 오류 신고
-    @Operation(summary = "사용자가 문제 오류를 신고하면 관리자에게 알림",
+    @Operation(summary = "연습문제 오류 신고 및 이의제기",
             description = "사용자가 문제 오류를 발견하면 관리자에게 신고할 수 있습니다. 신고가 접수되면 ROLE_ADMIN 으로 등록된 이메일로 메일을 발송합니다.")
     @PostMapping("/practice-complaints")
     public ResponseEntity<String> addComplaint(@RequestBody PracticeComplaintsDTO practiceComplaintsDTO,
@@ -62,6 +64,8 @@ public class PracticeController {
     }
 
     // 북마크 문제 가져오기
+    @Operation(summary = "북마크 페이지",
+            description = "사용자가 북마크한 문제를 과목별로 조회")
     @GetMapping("/bookmarks/{subjectName}")
     public ResponseEntity<List<BookmarkDTO>> getBookmarks(@PathVariable String subjectName,
                                                           @RequestHeader("Authorization") String authorizationHeader) {

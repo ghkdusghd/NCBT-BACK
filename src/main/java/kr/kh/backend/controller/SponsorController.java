@@ -1,5 +1,6 @@
 package kr.kh.backend.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.kh.backend.domain.Sponsor;
 import kr.kh.backend.dto.PaymentVerifyRequestDTO;
 import kr.kh.backend.dto.SponsorDTO;
@@ -16,6 +17,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/sponsor")
+@Tag(name = "SponsorController (결제 API) - 추가 구현 예정")
 public class SponsorController {
     private static final Logger log = LoggerFactory.getLogger(SponsorController.class);
     private final SponsorService sponsorService;
