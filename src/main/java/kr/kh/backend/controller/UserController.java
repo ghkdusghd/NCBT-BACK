@@ -1,5 +1,7 @@
 package kr.kh.backend.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -35,6 +37,7 @@ import java.time.Duration;
 @RestController
 @Slf4j
 @AllArgsConstructor
+@Tag(name = "UserController (사용자 API)")
 public class UserController {
 
     private final UserService userService;
@@ -45,6 +48,8 @@ public class UserController {
     private final JwtTokenProvider jwtTokenProvider;
 
     // 회원가입
+    @Operation(summary = "일반 회원가입",
+            description = "form 을 통한 일반적인 회원가입.")
     @PostMapping("/form/register")
     public ResponseEntity<String> register(@RequestBody LoginDTO loginDTO) {
         log.info("register : {}", loginDTO.toString());
@@ -87,8 +92,9 @@ public class UserController {
     }
 
     // 로그인
+    @Operation(summary = "일반 로그인 및 JWT 생성",
+            description = "form 을 통한 일반적인 로그인. 인증 정보를 바탕으로 JWT 를 생성하여 리턴합니다.")
     @PostMapping("/form/login")
-
     public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO, HttpServletResponse response) {
         log.info("login : {}", loginDTO.toString());
 
@@ -115,6 +121,8 @@ public class UserController {
     }
 
     // 로그아웃
+    @Operation(summary = "사용자가 로그아웃하면 Refresh Token 만료 처리",
+            description = "DB 에 저장한 Refresh Token 을 EXPIRED 처리하고, Cookie 의 만료 시간을 0 으로 변경하여 삭제합니다.")
     @PostMapping("/form/logout")
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
         try {
@@ -142,6 +150,8 @@ public class UserController {
     }
 
     // 닉네임 중복확인
+    @Operation(summary = "사용자 닉네임 중복확인",
+            description = "NCBT 서비스는 사용자의 닉네임으로 로그인하기 때문에 id 와 같이 중복을 허용하지 않습니다.")
     @GetMapping("/form/checkNick")
     public boolean checkUsername(@RequestParam String username) {
 
@@ -154,6 +164,8 @@ public class UserController {
     }
 
     // 이메일 인증 코드 요청
+    @Operation(summary = "[회원가입] 사용자 이메일로 인증 코드를 발송",
+            description = "불특정 사용자가 서비스를 이용할 수 없도록 이메일로 인증하며, 중복을 허용하지 않습니다.")
     @GetMapping("/form/email-code")
     public ResponseEntity<?> checkEmail(@RequestParam("email") @Valid String email) {
         boolean isExisted = userMapper.isEmailExisted(email);
@@ -172,6 +184,9 @@ public class UserController {
     }
 
     // 이메일 코드 인증하기
+    @Operation(summary = "[회원가입] 사용자가 이메일로 얻은 인증 코드를 검증",
+            description = "사용자가 이메일로 얻은 인증 코드와 서버의 인증 코드가 일치하는지 확인합니다. " +
+                    "이메일 인증이 완료되어야 회원가입이 가능합니다.")
     @PostMapping("/form/email-verify")
     public ResponseEntity<?> verifyCode(@RequestBody @Valid EmailVerificationDTO emailVerificationDTO) {
 
@@ -188,6 +203,7 @@ public class UserController {
 
 
     // 네이버 로그인
+    @Operation(summary = "네이버 소셜 로그인", description = "OAuth2 인증을 통한 소셜 로그인 및 JWT 생성")
     @PostMapping("/login/naver")
     public ResponseEntity<?> loginNaver(@RequestBody OauthLoginDTO oauthLoginDTO, HttpServletResponse response) {
         log.info("네이버 로그인 컨트롤러");
@@ -217,6 +233,7 @@ public class UserController {
     }
 
     // 깃허브 로그인
+    @Operation(summary = "깃허브 소셜 로그인", description = "OAuth2 인증을 통한 소셜 로그인 및 JWT 생성")
     @PostMapping("/login/github")
     public ResponseEntity<?> loginGithub(@RequestBody OauthLoginDTO oauthLoginDTO, HttpServletResponse response) {
         log.info("깃허브 로그인 컨트롤러");
@@ -246,6 +263,9 @@ public class UserController {
     }
 
     // 토큰 재발급
+    @Operation(summary = "Refresh Token 으로 Access Token 재발급",
+            description = "사용자의 인증 정보를 유지하기 위해 Refresh Token 이 유효하다면 Access Token 을 재발급 합니다. " +
+                    "이 과정은 보안을 위해 단 한 번만 이루어집니다.")
     @PostMapping("/refreshToken")
     public ResponseEntity<?> refreshToken() {
         String newAccessToken = jwtTokenProvider.refreshAccessToken(SecurityContextHolder.getContext().getAuthentication());
@@ -256,6 +276,8 @@ public class UserController {
     }
 
     // 유저 계정 찾기
+    @Operation(summary = "사용자 계정 찾기",
+            description = "사용자가 회원가입할 때 등록한 이메일로 아이디 (username) 를 조회한 후 리턴합니다.")
     @GetMapping("/form/find-account")
     public ResponseEntity<?> findAccount(@RequestParam String email){
         log.info("GET/form/findAccount {}", email);
@@ -265,6 +287,9 @@ public class UserController {
     }
 
     // 유저 계정 또는 이메일로 이메일 인증 코드 요청
+    @Operation(summary = "[비밀번호 재설정] 사용자 이메일 혹은 아이디로 인증 코드 발송",
+            description = "사용자 계정 찾기 단계에서 사용자가 회원가입할 때 등록한 이메일로 인증이 필요합니다. " +
+                    "이 API 에서는 사용자가 본인의 이메일을 모르더라도 아이디를 알고 있다면 인증 코드를 발송할 수 있도록 구현했습니다.")
     @PostMapping("/form/send-code")
     public ResponseEntity<String> sendAuthCode(
             @RequestParam(required = false) String nickname,
@@ -283,6 +308,7 @@ public class UserController {
     }
 
     // 비밀번호 재설정
+    @Operation(summary = "사용자 비밀번호 재설정", description = "사용자의 비밀번호를 재설정 합니다.")
     @PatchMapping("/form/renewPassword")
     public ResponseEntity<String> renewPassword(@RequestBody Map<String, String> request) {
         String username = request.get("username");
@@ -305,6 +331,8 @@ public class UserController {
     }
 
     // 비밀번호 재설정 코드 인증
+    @Operation(summary = "[비밀번호 재설정] 사용자가 이메일로 얻은 인증 코드를 검증",
+            description = "사용자가 이메일로 얻은 인증 코드와 서버의 코드가 일치한다면 비밀번호를 변경할 수 있습니다.")
     @GetMapping("/form/verify-pwd-code")
     public ResponseEntity<String> verifyAuthCode(
             @RequestParam(required = false) String username,

@@ -16,12 +16,19 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 @RequiredArgsConstructor
 @Slf4j
 public class JwtAuthFilter extends GenericFilterBean {
 
     private final JwtTokenProvider jwtTokenProvider;
+
+    private static final String[] SWAGGER_WHITELIST = {
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/v3/api-docs/**"
+    };
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -30,6 +37,13 @@ public class JwtAuthFilter extends GenericFilterBean {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         String path = ((HttpServletRequest) request).getRequestURI();
+
+        // Swagger 관련 경로가 있는지 확인
+        if (isSwaggerPath(path)) {
+            log.info("Swagger path detected: {}", path);
+            chain.doFilter(request, response); // Swagger 경로는 필터를 거치지 않고 바로 통과
+            return;
+        }
 
         // 모든 로그인 요청에 대해 예외 처리 (필터를 통과시킴)
         if (path.startsWith("/form/") || path.startsWith("/login/") || path.startsWith("/ranking/")) {
@@ -94,6 +108,17 @@ public class JwtAuthFilter extends GenericFilterBean {
         }
         log.info("Refresh Token null");
         return "Refresh Token null";
+    }
+
+    /**
+     * Swagger 관련 경로를 체크하는 메서드
+     */
+    private boolean isSwaggerPath(String path) {
+        return path.startsWith("/swagger-ui.html") ||
+                path.startsWith("/swagger-ui/") ||
+                path.startsWith("/v3/api-docs/") ||
+                path.startsWith("/api-docs/json/swagger-config") ||
+                path.startsWith("/api-docs/json");
     }
 
 }

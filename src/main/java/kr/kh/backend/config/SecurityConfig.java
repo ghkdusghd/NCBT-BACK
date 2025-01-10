@@ -51,8 +51,13 @@ public class SecurityConfig {
                                 .requestMatchers("/login/**").permitAll() // 소셜로그인, 회원가입 요청 허용
                                 .requestMatchers("/ranking/**").permitAll() // 메인 페이지 요청 허용
                                 .requestMatchers("/sponsor/**").permitAll() // 후원 관련
-                                .requestMatchers(HttpMethod.OPTIONS).permitAll() // OPTIONS 요청 허용
                                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN") // ADMIN 권한이 있어야 요청할 수 있는 경로
+                                .requestMatchers(HttpMethod.OPTIONS).permitAll() // OPTIONS 요청 허용
+                                // SWAGGER 요청 허용
+                                .requestMatchers(HttpMethod.GET, "/swagger-ui.html").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/v3/api-docs/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api-docs/**").permitAll()
                                 .anyRequest().authenticated() // 그 밖의 요청은 인증 필요
                 )
 
