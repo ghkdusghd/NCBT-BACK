@@ -20,7 +20,7 @@ public class ExamController {
     @PostMapping("/exam/record")
     public ResponseEntity<?> recordScore(@RequestBody ExamDTO examDTO,
                                          @RequestHeader("Authorization") String authorizationHeader) {
-        log.info("exam controller !!!!!!");
+        log.info("exam controller !!!!!! {}", examDTO);
         String token = authorizationHeader.replace("Bearer ", "");
         return examService.recordScore(examDTO, token);
     }

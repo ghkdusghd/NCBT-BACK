@@ -2,10 +2,9 @@ package kr.kh.backend.mapper;
 
 import kr.kh.backend.dto.BookmarkDTO;
 import kr.kh.backend.dto.PracticeComplaintsDTO;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
+
+import java.util.List;
 
 @Mapper
 public interface PracticeMapper {
@@ -31,5 +30,15 @@ public interface PracticeMapper {
     // 중복 신고 여부 확인
     @Select("SELECT * FROM question_complaints WHERE user_id = #{userId} AND subject_question_id = #{subjectQuestionId}")
     PracticeComplaintsDTO findComplaintByUserIdAndSubjectQuestionId(Long userId, Long subjectQuestionId);
+
+    // 북마크 가져오기
+    @Select("SELECT * FROM bookmarks WHERE user_id = #{userId} ORDER BY subject_id")
+    @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "subjectId", column = "subject_id"),
+            @Result(property = "questionId", column = "question_id"),
+            @Result(property = "userId", column = "user_id")
+    })
+    List<BookmarkDTO> findBookmarkByUserId(int userId);
 }
 
