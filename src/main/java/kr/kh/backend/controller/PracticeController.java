@@ -2,21 +2,32 @@ package kr.kh.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import kr.kh.backend.dto.BookmarkDTO;
 import kr.kh.backend.dto.PracticeComplaintsDTO;
+import kr.kh.backend.security.jwt.JwtTokenProvider;
 import kr.kh.backend.service.practice.PracticeService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
+@Slf4j
 @Tag(name = "PracticeController (연습문제 API)")
 public class PracticeController {
 
     @Autowired
     private  PracticeService practiceService;
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
     // 문제 북마크
     @Operation(summary = "사용자가 북마크한 문제 저장",
@@ -30,6 +41,7 @@ public class PracticeController {
 
     }
 
+    // 북마크 페이지 요청
     @GetMapping("/bookmarks")
     public ResponseEntity<Long> getBookmark(@RequestParam("questionId") Long questionId,
                                             @RequestHeader("Authorization") String authorizationHeader) {
@@ -48,5 +60,28 @@ public class PracticeController {
         return practiceService.addQuestionComplaints(practiceComplaintsDTO, token);
 
     }
+
+    // 북마크 문제 가져오기
+    @GetMapping("/bookmarks/{subjectName}")
+    public ResponseEntity<List<BookmarkDTO>> getBookmarks(@PathVariable String subjectName,
+                                                          @RequestHeader("Authorization") String authorizationHeader) {
+
+        String token = authorizationHeader.replace("Bearer ", "");
+        String username = jwtTokenProvider.getUsernameFromToken(token);
+
+        log.info("username: {}", username);
+        log.info("subjectName: {}", subjectName);
+
+        List<BookmarkDTO> bookmarkList = practiceService.getSubjectBookmarks(username, subjectName);
+
+        if (bookmarkList == null || bookmarkList.isEmpty()) {
+            log.info("북마크 정보가 없습니다");
+            return ResponseEntity.status(204).body(Collections.emptyList());
+        }
+
+        log.info("북마크 정보를 가져왔습니다. {}", bookmarkList);
+        return ResponseEntity.status(200).body(bookmarkList);
+    }
+
 }
 

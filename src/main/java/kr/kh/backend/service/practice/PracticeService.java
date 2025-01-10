@@ -1,5 +1,6 @@
 package kr.kh.backend.service.practice;
 
+import kr.kh.backend.domain.User;
 import kr.kh.backend.dto.BookmarkDTO;
 import kr.kh.backend.dto.PracticeComplaintsDTO;
 import kr.kh.backend.mapper.PracticeMapper;
@@ -10,7 +11,13 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import javax.security.auth.Subject;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.web.servlet.function.ServerResponse.status;
 
@@ -119,6 +126,26 @@ public class PracticeService {
                 return ResponseEntity.status(500).body("문제 오류 신고 중 문제가 발생했습니다: " + e.getMessage());
             }
         }
+
+        // 북마크 과목별 조회
+        public List<BookmarkDTO> getSubjectBookmarks(String username, String subjectName) {
+            Long userId = userMapper.findUserIdByUsername(username);
+            if (userId == null) {
+                throw new IllegalArgumentException("유효하지 않은 사용자입니다.");
+            }
+
+            Integer subjectId = practiceMapper.findIdByTitle(subjectName);
+            if (subjectId == null) {
+                throw new IllegalArgumentException("유효하지 않은 과목명입니다.");
+            }
+
+            List<BookmarkDTO> bookmarks = userMapper.findByUserIdAndSubjectId(userId, subjectId);
+            return bookmarks.isEmpty() ? Collections.emptyList() : bookmarks;
+        }
+
+
     }
+
+
 
 

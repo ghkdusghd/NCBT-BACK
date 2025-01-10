@@ -2,6 +2,7 @@ package kr.kh.backend.mapper;
 
 import kr.kh.backend.domain.EmailVerification;
 import kr.kh.backend.domain.User;
+import kr.kh.backend.dto.BookmarkDTO;
 import kr.kh.backend.dto.security.LoginDTO;
 import org.apache.ibatis.annotations.*;
 
@@ -82,4 +83,13 @@ public interface UserMapper {
     // email 로 User 객체 찾기
     @Select("SELECT * FROM user WHERE email = #{email}")
     User findByEmail(String email);
+
+    // user의 북마크 문제 조회
+    @Select("SELECT id, subject_id, question_id FROM bookmarks WHERE user_id = #{userId} AND subject_id = #{subjectId}")
+    @Results({
+            @Result(property = "subjectId", column = "subject_id"),
+            @Result(property = "questionId", column = "question_id"),
+    })
+    List<BookmarkDTO> findByUserIdAndSubjectId(@Param("userId") Long userId, @Param("subjectId") Integer subjectId);
+
 }
