@@ -19,6 +19,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -33,6 +34,7 @@ import java.util.Map;
 public class Oauth2UserService extends DefaultOAuth2UserService {
 
     private final UserMapper userMapper;
+    private final RestClient restClient;
 
     @Value("${spring.security.oauth2.client.registration.naver.client-id}")
     private String naverClientId;
@@ -52,22 +54,33 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
      */
     public Authentication getNaverUser(String code, String state) {
         log.info("네이버 로그인 서비스");
-        RestTemplate restTemplate = new RestTemplate();
 
-        // 리액트에서 받은 인가 코드로 접근 코드 획득
-        String getTokenUrl = "https://nid.naver.com/oauth2.0/token?grant_type=authorization_code"
-                + "&client_id=" + naverClientId + "&client_secret=" + naverClientSecret
-                + "&code=" + code + "&state=" + state;
-        Map<String, String> naverToken = restTemplate.getForObject(getTokenUrl, Map.class);
+        // 인가 코드로 액세스 토큰 요청
+        String getTokenUrl = "https://nid.naver.com/oauth2.0/token";
+        Map<String, String> naverToken = restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(getTokenUrl)
+                        .queryParam("grant_type", "authorization_code")
+                        .queryParam("client_id", naverClientId)
+                        .queryParam("client_secret", naverClientSecret)
+                        .queryParam("code", code)
+                        .queryParam("state", state)
+                        .build())
+                .retrieve()
+                .body(Map.class);
+
         String naverAccessToken = naverToken.get("access_token");
 
-        // 접근 코드로 사용자의 로그인 정보 획득
+        // 액세스 토큰으로 사용자 정보 요청
         String getUserUrl = "https://openapi.naver.com/v1/nid/me";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + naverAccessToken);
-        HttpEntity<String> request = new HttpEntity<>(null, headers);
-        ResponseEntity<Map> naverResponse = restTemplate.exchange(getUserUrl, HttpMethod.GET, request, Map.class);
-        Map<String, String> naverUser = (Map) naverResponse.getBody().get("response");
+        Map<String, Object> naverResponse = restClient.get()
+                .uri(getUserUrl)
+                .headers(headers -> headers.setBearerAuth(naverAccessToken))
+                .retrieve()
+                .body(Map.class);
+
+        // 사용자 정보 추출
+        Map<String, String> naverUser = (Map<String, String>) naverResponse.get("response");
 
         // 네이버 사용자 정보가 디비에 있는지 확인
         if(naverUser != null) {
@@ -110,39 +123,37 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
      */
     public Authentication getGithubUser(String code) {
         log.info("깃허브 로그인 서비스");
-        RestTemplate restTemplate = new RestTemplate();
 
-        // 응답으로 받은 코드로 access token 요청
-        // 요청 객체 생성
-        URI uri = UriComponentsBuilder
-                .fromUriString("https://github.com/login/oauth/access_token")
-                .queryParam("client_id", githubClientId)
-                .queryParam("client_secret", githubClientSecret)
-                .queryParam("code", code)
-                .encode()
-                .build().toUri();
-        RequestEntity<Void> requestEntity =
-                RequestEntity.post(uri)
-                        .header("Accept", "application/json").build();
-        // restTemplate 으로 POST 요청하여 access token 을 얻는다.
-        ResponseEntity<GithubLoginDTO> response =
-                restTemplate.exchange(requestEntity, GithubLoginDTO.class);
-        String githubAccessToken = response.getBody().getAccess_token();
+        // restClient 로 최적화
+        GithubLoginDTO response = restClient.post()
+                .uri(uriBuilder -> uriBuilder
+                        .scheme("https")
+                        .host("github.com")
+                        .path("/login/oauth/access_token")
+                        .queryParam("client_id", githubClientId)
+                        .queryParam("client_secret", githubClientSecret)
+                        .queryParam("code", code)
+                        .build())
+                .header("Accept", "application/json")
+                .retrieve()
+                .body(GithubLoginDTO.class);
+        String githubAccessToken = response.getAccess_token();
 
-        // access token 을 사용하여 사용자의 로그인 정보 획득
-        String getUserUrl = "https://api.github.com/user";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + githubAccessToken);
-        HttpEntity<String> requestUser = new HttpEntity<>(null, headers);
-        ResponseEntity<GithubUserDTO> githubResponse = restTemplate.exchange(getUserUrl, HttpMethod.GET, requestUser, GithubUserDTO.class);
-        GithubUserDTO githubUser = githubResponse.getBody();
+        // 사용자 정보 조회
+        GithubUserDTO githubUser = restClient.get()
+                .uri("https://api.github.com/user")
+                .header("Authorization", "Bearer " + githubAccessToken)
+                .retrieve()
+                .body(GithubUserDTO.class);
 
-        // 깃허브는 이메일 정보는 따로 요청해야 한다...
-        String getEmailUrl = "https://api.github.com/user/emails";
-        HttpEntity<String> requestEmail = new HttpEntity<>(null, headers);
-        ResponseEntity<List<GithubEmailDTO>> emailResponse = restTemplate.exchange(getEmailUrl, HttpMethod.GET, requestEmail, new ParameterizedTypeReference<List<GithubEmailDTO>>() {});
-        List<GithubEmailDTO> emails = emailResponse.getBody();
-        String primaryEmail = emails.isEmpty() ? "이메일 없음" : emails.get(0).getEmail();
+        // 이메일 정보 조회
+        List<GithubEmailDTO> emails = restClient.get()
+                .uri("https://api.github.com/user/emails")
+                .header("Authorization", "Bearer " + githubAccessToken)
+                .retrieve()
+                .body(new ParameterizedTypeReference<List<GithubEmailDTO>>() {});
+
+        String primaryEmail = (emails != null && !emails.isEmpty()) ? emails.get(0).getEmail() : "이메일 없음";
 
         // 깃허브 사용자 정보가 디비에 있는지 확인
         if(githubUser != null) {

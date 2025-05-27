@@ -1,6 +1,7 @@
 package kr.kh.backend.service;
 
 import kr.kh.backend.dto.RankDTO;
+import kr.kh.backend.dto.SubjectNameDTO;
 import kr.kh.backend.mapper.RankMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,31 +52,10 @@ public class RankService {
     /**
      * V2 : join 쿼리로 한번에 검색
      */
-    public Map<String, List> getRankingV2(RankDTO rankDTO) {
-        String title = rankDTO.getTitle();
-        log.info("Ranking title: {}", title);
-
-        if(title.equals("NCA")) {
-            findRanker(rankDTO);
-            log.info("Get NCA Ranking !");
-        }
-
-        if(title.equals("NCP")) {
-            // NCP200
-            rankDTO.setTitle("NCP200");
-            findRanker(rankDTO);
-
-            // NCP202
-            rankDTO.setTitle("NCP202");
-            findRanker(rankDTO);
-
-            // NCP207
-            rankDTO.setTitle("NCP207");
-            findRanker(rankDTO);
-            log.info("Get NCP Ranking !");
-        }
-
-        return results;
+    public List<RankDTO> getRankingV2(String title) {
+        log.info("랭킹 서비스 !!!!!");
+        List<RankDTO> result = rankMapper.findTop5(title);
+        return result;
     }
 
 }

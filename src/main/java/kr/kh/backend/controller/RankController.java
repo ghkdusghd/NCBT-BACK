@@ -3,6 +3,7 @@ package kr.kh.backend.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.kh.backend.dto.RankDTO;
+import kr.kh.backend.dto.SubjectNameDTO;
 import kr.kh.backend.exception.CustomException;
 import kr.kh.backend.service.RankService;
 import lombok.RequiredArgsConstructor;
@@ -42,15 +43,9 @@ public class RankController {
             description = "V1 버전은 사용자의 한 번의 요청에 API 를 여러 번 호출하도록 설계되어 있어 비효율적이며, 네트워크 통신 비용을 증가시킨다는 문제가 있습니다. " +
                     "그래서 V2 버전에서는 사용자의 한 번의 요청에 API 를 한 번만 호출하여 모든 데이터를 조회하도록 개선했습니다.")
     @PostMapping("/ranking/v2")
-    public ResponseEntity<Map<String, List>> getRankingV2(@RequestBody RankDTO rankDTO) {
-        log.info("랭킹 컨트롤러 !!!!!!");
-        if(rankDTO == null || rankDTO.getTitle() == null) {
-            throw new CustomException(
-                    "title 정보는 필수입니다.",
-                    "INVALID_RANK_INFO",
-                    HttpStatus.BAD_REQUEST
-            );
-        }
-        return ResponseEntity.ok(rankService.getRankingV2(rankDTO));
+    public ResponseEntity<?> getRankingV2(@RequestBody SubjectNameDTO subjectNameDTO) {
+        log.info("랭킹 컨트롤러 !!!!!! {}", subjectNameDTO.getTitle());
+        return ResponseEntity.ok(rankService.getRankingV2(subjectNameDTO.getTitle()));
     }
+
 }
