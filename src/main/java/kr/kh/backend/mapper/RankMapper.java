@@ -34,4 +34,13 @@ public interface RankMapper {
             "(SELECT id FROM subject WHERE title = #{title}) " +
             "ORDER BY t.score DESC, t.created_at DESC LIMIT 5")
     List<RankDTO> findTop5V2(RankDTO rankDTO);
+
+
+    @Select("SELECT u.nickname, t.score " +
+            "FROM user u " +
+            "INNER JOIN last_score t ON u.id = t.user_id " +
+            "WHERE t.subject_id = " +
+            "(SELECT id FROM subject WHERE title = #{title}) " +
+            "ORDER BY t.score DESC, t.created_at DESC LIMIT 5")
+    List<RankDTO> findTop5(String title);
 }
