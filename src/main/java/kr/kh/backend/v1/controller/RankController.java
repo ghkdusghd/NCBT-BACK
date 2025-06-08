@@ -2,8 +2,8 @@ package kr.kh.backend.v1.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kr.kh.backend.v1.dto.RankDTO;
-import kr.kh.backend.v1.dto.SubjectNameDTO;
+import kr.kh.backend.common.dto.RankDTO;
+import kr.kh.backend.common.dto.SubjectNameDTO;
 import kr.kh.backend.v1.exception.CustomException;
 import kr.kh.backend.v1.service.RankService;
 import lombok.RequiredArgsConstructor;

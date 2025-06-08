@@ -2,8 +2,8 @@ package kr.kh.backend.v1.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.kh.backend.v1.domain.Sponsor;
-import kr.kh.backend.v1.dto.PaymentVerifyRequestDTO;
-import kr.kh.backend.v1.dto.SponsorDTO;
+import kr.kh.backend.common.dto.PaymentVerifyRequestDTO;
+import kr.kh.backend.common.dto.SponsorDTO;
 import kr.kh.backend.v1.service.SponsorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

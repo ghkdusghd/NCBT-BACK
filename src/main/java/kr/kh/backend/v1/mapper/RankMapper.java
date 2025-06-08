@@ -1,6 +1,6 @@
 package kr.kh.backend.v1.mapper;
 
-import kr.kh.backend.v1.dto.RankDTO;
+import kr.kh.backend.common.dto.RankDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 

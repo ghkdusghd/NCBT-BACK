@@ -1,6 +1,6 @@
 package kr.kh.backend.v1.service;
 
-import kr.kh.backend.v1.dto.RankDTO;
+import kr.kh.backend.common.dto.RankDTO;
 import kr.kh.backend.v1.mapper.RankMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

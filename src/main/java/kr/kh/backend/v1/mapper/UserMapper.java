@@ -2,8 +2,8 @@ package kr.kh.backend.v1.mapper;
 
 import kr.kh.backend.v1.domain.EmailVerification;
 import kr.kh.backend.v1.domain.User;
-import kr.kh.backend.v1.dto.BookmarkDTO;
-import kr.kh.backend.v1.dto.security.LoginDTO;
+import kr.kh.backend.common.dto.BookmarkDTO;
+import kr.kh.backend.common.security.dto.LoginDTO;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;

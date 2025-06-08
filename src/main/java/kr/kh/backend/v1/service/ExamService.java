@@ -1,6 +1,6 @@
 package kr.kh.backend.v1.service;
 
-import kr.kh.backend.v1.dto.ExamDTO;
+import kr.kh.backend.common.dto.ExamDTO;
 import kr.kh.backend.v1.mapper.ExamMapper;
 import kr.kh.backend.v1.mapper.UserMapper;
 import kr.kh.backend.common.security.jwt.JwtTokenProvider;

@@ -2,7 +2,7 @@ package kr.kh.backend.v1.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kr.kh.backend.v1.dto.PracticeComplaintsDTO;
+import kr.kh.backend.common.dto.PracticeComplaintsDTO;
 import kr.kh.backend.v1.service.AdminService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

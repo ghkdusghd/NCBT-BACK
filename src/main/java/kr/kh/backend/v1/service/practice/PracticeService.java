@@ -1,11 +1,11 @@
 package kr.kh.backend.v1.service.practice;
 
-import kr.kh.backend.v1.dto.BookmarkDTO;
-import kr.kh.backend.v1.dto.PracticeComplaintsDTO;
+import kr.kh.backend.common.dto.BookmarkDTO;
+import kr.kh.backend.common.dto.PracticeComplaintsDTO;
 import kr.kh.backend.v1.mapper.PracticeMapper;
 import kr.kh.backend.v1.mapper.UserMapper; // 올바른 UserMapper 임포트
 import kr.kh.backend.common.security.jwt.JwtTokenProvider;
-import kr.kh.backend.v1.service.security.EmailVerificationService;
+import kr.kh.backend.common.security.service.EmailVerificationService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +42,7 @@ public class PracticeService {
             return ResponseEntity.badRequest().body("사용자 정보가 없습니다.");
         }
 
-        bookmarkDTO.setUserId(userId.intValue());
+        bookmarkDTO.setUserId(userId);
 
         try {
             BookmarkDTO existingBookmark = practiceMapper.findBookmarkByUserIdAndQuestionId(userId, (long) bookmarkDTO.getQuestionId());

@@ -45,8 +45,9 @@ public class JwtAuthFilter extends GenericFilterBean {
         String requestPath = httpRequest.getRequestURI();
         log.info("요청 경로: {}", requestPath);
 
-        // 모든 로그인 요청에 대해 예외 처리 (필터를 통과시킴)
-        if (path.startsWith("/form/") || path.startsWith("/login/") || path.startsWith("/ranking/")) {
+        // 토큰이 필요없는 요청에 대해 통과
+        if (path.startsWith("/form/") || path.startsWith("/login/") || path.startsWith("/v2/ranking")
+            || path.startsWith("/v2/login/")) {
             log.info("httpUri = {}", httpRequest.getRequestURI());
             chain.doFilter(request, response);
             return;

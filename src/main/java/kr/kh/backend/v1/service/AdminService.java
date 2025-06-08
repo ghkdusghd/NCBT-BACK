@@ -1,8 +1,8 @@
 package kr.kh.backend.v1.service;
 
-import kr.kh.backend.v1.dto.PracticeComplaintsDTO;
+import kr.kh.backend.common.dto.PracticeComplaintsDTO;
 import kr.kh.backend.v1.mapper.AdminMapper;
-import kr.kh.backend.v1.service.security.EmailVerificationService;
+import kr.kh.backend.common.security.service.EmailVerificationService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

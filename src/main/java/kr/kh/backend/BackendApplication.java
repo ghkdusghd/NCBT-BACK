@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication(scanBasePackages = {"kr.kh.backend.common", "kr.kh.backend.v1", "kr.kh.backend.v2"})
-@MapperScan(basePackages = "kr.kh.backend.v1.mapper")
+@MapperScan(basePackages = {"kr.kh.backend.v1.mapper", "kr.kh.backend.v2.mapper"})
 public class BackendApplication {
 
 	public static void main(String[] args) {

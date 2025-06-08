@@ -5,7 +5,6 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import kr.kh.backend.v1.domain.Token;
 import kr.kh.backend.v1.domain.TokenStatus;
-import kr.kh.backend.v1.dto.security.JwtToken;
 import kr.kh.backend.v1.mapper.TokenMapper;
 import kr.kh.backend.v1.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -81,15 +80,15 @@ public class JwtTokenProvider {
         log.info("generated refresh Token = {}", refreshToken);
 
         // refreshs token 디비에 저장
-        int userId = userMapper.findId(authentication.getName());
-        Token token = new Token();
-        token.setToken(refreshToken);
-        token.setUserId(userId);
-        token.setStatus(TokenStatus.VALID);
-        token.setExpirationDate(refreshExpiration);
-        int result = tokenMapper.saveToken(token);
+//        int userId = userMapper.findId(authentication.getName());
+//        Token token = new Token();
+//        token.setToken(refreshToken);
+//        token.setUserId(userId);
+//        token.setStatus(TokenStatus.VALID);
+//        token.setExpirationDate(refreshExpiration);
+//        int result = tokenMapper.saveToken(token);
 
-        log.info("리프레시 토큰 저장 완료 ? {}", refreshToken, result == 1 ? "YES" : "NO");
+//        log.info("리프레시 토큰 저장 완료 ? {}", refreshToken, result == 1 ? "YES" : "NO");
 
         return JwtToken.builder()
                 .grantType("Bearer")

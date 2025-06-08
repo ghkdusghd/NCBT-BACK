@@ -1,7 +1,7 @@
 package kr.kh.backend.v1.mapper;
 
-import kr.kh.backend.v1.dto.BookmarkDTO;
-import kr.kh.backend.v1.dto.PracticeComplaintsDTO;
+import kr.kh.backend.common.dto.BookmarkDTO;
+import kr.kh.backend.common.dto.PracticeComplaintsDTO;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;

@@ -5,8 +5,8 @@ import kr.kh.backend.v1.handler.Oauth2LoginFailureHandler;
 import kr.kh.backend.v1.handler.Oauth2LoginSuccessHandler;
 import kr.kh.backend.common.security.jwt.JwtAuthFilter;
 import kr.kh.backend.common.security.jwt.JwtTokenProvider;
-import kr.kh.backend.v1.service.security.CustomUserDetailsService;
-import kr.kh.backend.v1.service.security.Oauth2UserService;
+import kr.kh.backend.common.security.service.CustomUserDetailsService;
+import kr.kh.backend.common.security.service.Oauth2UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -45,9 +45,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         authorize -> authorize
                                 .requestMatchers("/error").permitAll()
-                                .requestMatchers("/form/**").permitAll() // 일반로그인, 회원가입 요청 허용
-                                .requestMatchers("/login/**").permitAll() // 소셜로그인, 회원가입 요청 허용
-                                .requestMatchers("/ranking/**").permitAll() // 메인 페이지 요청 허용
+                                .requestMatchers("/login/**").permitAll()
+                                .requestMatchers("/v2/login/**").permitAll()
+                                .requestMatchers("/v2/ranking").permitAll()
                                 .requestMatchers("/sponsor/**").permitAll() // 후원 관련
                                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN") // ADMIN 권한이 있어야 요청할 수 있는 경로
                                 .requestMatchers(HttpMethod.OPTIONS).permitAll() // OPTIONS 요청 허용
