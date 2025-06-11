@@ -4,8 +4,6 @@ import kr.kh.backend.common.dto.PracticeComplaintsDTO;
 import kr.kh.backend.common.exception.custom.EmailFailureException;
 import kr.kh.backend.common.exception.custom.ExistComplaintException;
 import kr.kh.backend.common.security.jwt.JwtTokenProvider;
-import kr.kh.backend.common.security.service.EmailVerificationService;
-import kr.kh.backend.v1.mapper.PracticeMapper;
 import kr.kh.backend.v2.entity.Complaint;
 import kr.kh.backend.v2.entity.ComplaintStatus;
 import kr.kh.backend.v2.entity.User;
@@ -19,15 +17,13 @@ import java.time.LocalDateTime;
 public class ComplaintsServiceImpl implements ComplaintsService {
 
     private final ComplaintsRepository complaintsRepository;
-    private final PracticeMapper practiceMapper;
-    private final EmailVerificationService emailVerificationService;
+    private final MailService mailService;
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public ComplaintsServiceImpl(ComplaintsRepository complaintsRepository, PracticeMapper practiceMapper, EmailVerificationService emailVerificationService, UserService userService, JwtTokenProvider jwtTokenProvider) {
+    public ComplaintsServiceImpl(ComplaintsRepository complaintsRepository, MailService mailService, UserService userService, JwtTokenProvider jwtTokenProvider) {
         this.complaintsRepository = complaintsRepository;
-        this.practiceMapper = practiceMapper;
-        this.emailVerificationService = emailVerificationService;
+        this.mailService = mailService;
         this.userService = userService;
         this.jwtTokenProvider = jwtTokenProvider;
     }
@@ -54,7 +50,7 @@ public class ComplaintsServiceImpl implements ComplaintsService {
                     .createdAt(LocalDateTime.now())
                     .build();
             complaintsRepository.save(complaint);
-            emailVerificationService.sendComplaintsToAdmin(practiceComplaintsDTO);
+            mailService.sendComplaintsToAdmin(practiceComplaintsDTO); // 비동기 실행
 
         }catch (EmailFailureException ex) {
             throw new EmailFailureException("문제 오류 신고 중 문제가 발생했습니다.", LocalDateTime.now(), HttpStatus.INTERNAL_SERVER_ERROR);

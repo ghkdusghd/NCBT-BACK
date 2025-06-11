@@ -149,6 +149,7 @@ public class EmailVerificationService {
         mailService.sendEmail(email, title, "인증번호: " + authCode);
     }
 
+    // complaints 관련 메일 발송
     public void sendComplaintsToAdmin(PracticeComplaintsDTO practiceComplaintsDTO) {
 
         String title = "[NCBT] 문제 오류가 접수되었습니다.";
