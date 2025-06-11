@@ -11,77 +11,77 @@ import java.util.List;
 @Mapper
 public interface UserMapper {
 
-    @Select("SELECT * FROM user WHERE nickname = #{username}")
+    @Select("SELECT * FROM users WHERE nickname = #{username}")
     User findByUsername(String username);
 
-    @Select("SELECT email FROM user WHERE nickname = #{username}")
+    @Select("SELECT email FROM users WHERE nickname = #{username}")
     String findEmailByUsername(String email);
 
     // 일반 로그인 insert
-    @Insert("INSERT INTO user(email, nickname, password, roles) " +
+    @Insert("INSERT INTO users(email, nickname, password, roles) " +
             "VALUES (#{email}, #{username}, #{password}, #{roles})")
     void insertUser(LoginDTO loginDTO);
 
     // 소셜 로그인 insert
-    @Insert("INSERT INTO user(email, nickname, roles, platform) " +
+    @Insert("INSERT INTO users(email, nickname, roles, platform) " +
             "VALUES (#{email}, #{nickname}, #{roles}, #{platform})")
     void insertOauthUser(User user);
 
-    @Select("SELECT COUNT(*) > 0 FROM user WHERE nickname = #{username}")
+    @Select("SELECT COUNT(*) > 0 FROM users WHERE nickname = #{username}")
     boolean isUsernameExisted(String username);
 
     // 트큰의 username으로 user_id 조회
-    @Select("SELECT id FROM user WHERE nickname = #{username}")
+    @Select("SELECT id FROM users WHERE nickname = #{username}")
     Long findUserIdByUsername(String username);
 
     // 우리 user_id 는 int 아니었나용...
-    @Select("SELECT id FROM user WHERE nickname = #{username}")
+    @Select("SELECT id FROM users WHERE nickname = #{username}")
     int findId(String nickname);
 
     // 이메일 중복 확인
-    @Select("SELECT COUNT(*) > 0 FROM user WHERE email = #{email}")
+    @Select("SELECT COUNT(*) > 0 FROM users WHERE email = #{email}")
     boolean isEmailExisted(String email);
 
     // 이메일 인증 코드 저장
-    @Insert("INSERT INTO email_verification (email, auth_code, expiration_time) " +
+    @Insert("INSERT INTO email_verifications (email, auth_code, expiration_time) " +
             "VALUES (#{email}, #{authCode}, #{expirationTime})")
     void insertEmailVerification(EmailVerification emailVerification);
 
     // Email로 이메일 인증 조회
-    @Select("SELECT * FROM email_verification WHERE email = #{email}")
+    @Select("SELECT * FROM email_verifications WHERE email = #{email}")
     EmailVerification findByVerifiedEmail(String email);
 
     // 인증 코드와 이메일 확인
-    @Select("SELECT COUNT(*) = 1 FROM email_verification " +
+    @Select("SELECT COUNT(*) = 1 FROM email_verifications " +
             "WHERE email = #{email} AND auth_code = #{authCode}")
     boolean verifyAuthCode(String email, String authCode);
 
     // 인증 코드 삭제
-    @Delete("DELETE FROM email_verification WHERE email = #{email}")
+    @Delete("DELETE FROM email_verifications WHERE email = #{email}")
     void deleteEmailVerification(String email);
 
     // 계정 찾기
-    @Select("SELECT nickname FROM user WHERE email = #{email}")
+    @Select("SELECT nickname FROM users WHERE email = #{email}")
     String findUsernameByEmail(String email);
 
     // 비밀번호 재설정
-    @Update("UPDATE user SET password = #{password} WHERE nickname = #{username}")
+    @Update("UPDATE users SET password = #{password} WHERE nickname = #{username}")
     void updatePassword(@Param("username") String username, @Param("password") String password);
 
     // 사용자 비밀번호 찾기
-    @Select("SELECT password FROM user WHERE nickname = #{username}")
+    @Select("SELECT password FROM users WHERE nickname = #{username}")
     String findPasswordByUsername(String username);
 
     // 관리자 계정 찾기
-    @Select("SELECT * FROM user WHERE roles = 'ADMIN'")
+    @Select("SELECT * FROM users WHERE roles = 'ADMIN'")
     List<User> findAdminUsers();
 
     // id 로 사용자 이메일 찾기
-    @Select("SELECT email FROM user WHERE id = #{userId}")
+    @Select("SELECT email FROM users WHERE id = #{userId}")
     String findEmailByUserId(Long userId);
 
     // email 로 User 객체 찾기
-    @Select("SELECT * FROM user WHERE email = #{email}")
+    @Select("SELECT * FROM users WHERE email = #{email}")
     User findByEmail(String email);
 
     // user의 북마크 문제 조회

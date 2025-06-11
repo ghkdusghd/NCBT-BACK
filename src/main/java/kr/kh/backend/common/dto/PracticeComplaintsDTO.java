@@ -1,5 +1,6 @@
 package kr.kh.backend.common.dto;
 
+import kr.kh.backend.v2.entity.SubjectTitle;
 import lombok.Data;
 
 @Data
@@ -8,6 +9,7 @@ public class PracticeComplaintsDTO {
     private int id;
     private Long userId;
     private Long subjectId;
+    private SubjectTitle subjectTitle;
     private Long subjectQuestionId;
     private String title;
     private String content;
